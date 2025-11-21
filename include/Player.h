@@ -8,6 +8,9 @@
 #include "Utils.h"
 #include "IFileHandler.h"
 
+/**
+ * @brief Простір імен системи управління футбольною командою.
+ */
 namespace FootballManagement
 {
     /**
@@ -50,15 +53,19 @@ namespace FootballManagement
                const std::string& origin, double height, double weight,
                double value);
 
+        /** @brief Копіювальний конструктор. */
         Player(const Player& other);
+
+        /** @brief Переміщувальний конструктор. */
         Player(Player&& other) noexcept;
 
+        /** @brief Оператор копіювального присвоєння. */
         Player& operator=(const Player& other);
+
+        /** @brief Оператор переміщувального присвоєння. */
         Player& operator=(Player&& other) noexcept;
 
-        /**
-         * @brief Віртуальний деструктор.
-         */
+        /** @brief Віртуальний деструктор. */
         virtual ~Player();
 
         int GetPlayerId() const;
@@ -80,34 +87,24 @@ namespace FootballManagement
         void SetWeight(double weight);
         void SetMarketValue(double value);
 
-        /**
-         * @brief Відображає інформацію про гравця.
-         */
+        /** @brief Абстрактний метод — повна інформація про гравця. */
         virtual void ShowInfo() const = 0;
 
-        /**
-        * @brief Обчислює поточну ринкову вартість на основі статистики.
-         * @return Розрахункова вартість.
-         */
+        /** @brief Абстрактний метод — розрахунок ринкової вартості. */
         virtual double CalculateValue() const = 0;
 
-        /**
-        * @brief @brief Обчислює рейтинг продуктивності гравця.
-         * @return Рейтинг продуктивності.
-         */
+        /** @brief Абстрактний метод — ефективність гравця. */
         virtual double CalculatePerformanceRating() const = 0;
 
-        /**
-         * Повертає поточний статус гравця (на контракті, вільний агент, в оренді).
-         * @return Статус у вигляді рядка.
-         */
+        /** @brief Абстрактний метод — статус (контракт / вільний агент). */
         virtual std::string GetStatus() const = 0;
+
+        /** @brief Абстрактний метод — день народження (збільшити вік). */
+        virtual void CelebrateBirthday() = 0;
 
         /**
          * @brief Повідомити про травму гравця.
-         *
          * Додається запис до injuryHistory_ і статус injured_ ставиться у true.
-         *
          * @param type Тип травми.
          * @param recoveryDays Очікувані дні для відновлення (повинні бути > 0).
          */
@@ -120,45 +117,19 @@ namespace FootballManagement
 
         /**
          * @brief Оновити ринкову вартість на певний відсоток (може бути негативним).
-         *
          * @param percentageChange Відсоток зміни (наприклад, 10.0 => +10%).
          */
         void UpdateMarketValue(double percentageChange);
 
-        /**
-         * @brief Відзначити день народження (логіка збільшення віку у реалізації нащадків).
-         */
-        virtual void CelebrateBirthday() = 0;
 
-        /**
-         * @brief Відзначити день народження (логіка збільшення віку у реалізації нащадків).
-         */
         std::string Serialize() const override = 0;
-
-        /**
-         * @brief Десеріалізує об'єкт з рядка.
-         *
-         * Нащадки повинні викликати DeserializeBase(data) для парсингу базових полів.
-         *
-         * @param data Вхідний рядок (JSON або інший формат).
-         */
         virtual void Deserialize(const std::string& data) override = 0;
 
     protected:
-        /**
-         * @brief Серіалізує базові поля в JSON-рядок (частина серіалізації для нащадків).
-         * @return JSON-подібний рядок із базовими полями (без зовнішніх фігурних дужок).
-         */
+        /** @brief Серіалізація спільних полів для JSON. */
         std::string SerializeBase() const;
 
-        /**
-         * @brief Десеріалізує базові поля з JSON-рядка.
-         *
-         * Простий, стійкий до помилок парсер. Рекомендується в майбутньому замінити на
-         * перевірену JSON-бібліотеку.
-         *
-         * @param data JSON-рядок або частина; функція міняє поля базового класу.
-         */
-        void DeserializeBase(const std::string& data);
+        /** @brief Десеріалізація спільних полів. */
+        void DeserializeBase(const std::string& json);
     };
 }
