@@ -6,17 +6,24 @@
 
 namespace FootballManagement
 {
-    ContractDetails::ContractDetails() : clubName_("N/A"), salary_(0.0),
-                                         contractUntil_("N/A"),
+    ContractDetails::ContractDetails() : clubName_("Невідомо"), salary_(0.0),
+                                         contractUntil_("Невідомо"),
                                          isLoaned_(false), loanEndDate_("")
     {
     }
 
     ContractDetails::ContractDetails(const std::string& clubName, double salary,
-                                     std::string contractUntil) :
+                                     const std::string& contractUntil) :
         clubName_(clubName), salary_(salary), contractUntil_(contractUntil),
         isLoaned_(false), loanEndDate_("")
     {
+        if (clubName.empty())
+            throw std::invalid_argument("Назва клубу не може бути порожньою.");
+        if (salary < 0.0)
+            throw std::invalid_argument("Зарплата не може бути від’ємною.");
+        if (contractUntil.length() != 10)
+            throw std::invalid_argument(
+                "Невірний формат дати (потрібно YYYY-MM-DD).");
     }
 
     ContractDetails::ContractDetails(const ContractDetails& other) :
@@ -66,7 +73,6 @@ namespace FootballManagement
     }
 
     std::string ContractDetails::GetClubName() const { return clubName_; }
-
     double ContractDetails::GetSalary() const { return salary_; }
 
     std::string ContractDetails::GetContractUntil() const
@@ -79,86 +85,88 @@ namespace FootballManagement
     void ContractDetails::SetClubName(const std::string& clubName)
     {
         if (clubName.empty())
-        {
-            throw std::invalid_argument("Club name cannot be empty.");
-        }
+            throw std::invalid_argument("Назва клубу не може бути порожньою.");
         clubName_ = clubName;
     }
 
     void ContractDetails::SetContractUntil(const std::string& contractUntil)
     {
         if (contractUntil.length() != 10)
-        {
-            throw std::invalid_argument("Data format must be YYYY-MM-DD.");
-        }
+            throw std::invalid_argument(
+                "Формат дати повинен бути YYYY-MM-DD.");
+
         contractUntil_ = contractUntil;
     }
 
     void ContractDetails::SetOnLoan(const std::string& loanEndDate)
     {
         if (loanEndDate.empty())
-        {
-            throw std::invalid_argument("Loan end date cannot be empty.");
-        }
+            throw std::invalid_argument(
+                "Дата завершення оренди не може бути порожньою.");
 
         isLoaned_ = true;
         loanEndDate_ = loanEndDate;
-        std::cout << "[INFO] Player set on loan until " << loanEndDate <<
+
+        std::cout << "[INFO] Гравця орендовано до " << loanEndDate_ << "." <<
             std::endl;
     }
 
     void ContractDetails::ReturnFromLoan()
     {
         isLoaned_ = false;
-        loanEndDate_ = "";
-        std::cout << "[INFO] Player returned from loan." << std::endl;
+        loanEndDate_.clear();
+        std::cout << "[INFO] Гравець повернувся з оренди." << std::endl;
     }
 
     bool ContractDetails::IsExpiringSoon() const
     {
-        if (!IsContractValid() || isLoaned_) return false;
-        return contractUntil_.substr(0, 4) < "2026";
+        if (!IsContractValid()) return false;
+
+        std::string yearStr = contractUntil_.substr(0, 4);
+        int year = std::stoi(yearStr);
+        return (year <= 2025);
     }
 
     void ContractDetails::AdjustSalary(double percentage)
     {
         if (salary_ <= 0.0)
-        {
             throw std::logic_error(
-                "Cannot adjust salary, current salary is zero or negative.");
-        }
+                "Неможливо змінити зарплату, поточне значення ≤ 0.");
 
         double factor = 1.0 + (percentage / 100.0);
         salary_ = salary_ * factor;
-        std::cout << "[INFO] Salary adjusted by " << percentage <<
-            "%. New salary: " << salary_ << std::endl;
+
+        std::cout << "[INFO] Зарплата змінена на " << percentage
+            << "%. Нова зарплата: " << std::fixed << std::setprecision(2)
+            << salary_ << " €" << std::endl;
     }
 
     void ContractDetails::ExtendContractDate(const std::string& newDate)
     {
         if (newDate.length() < 10)
-        {
-            throw std::invalid_argument("Invalid date format. Use YYYY-MM-DD&");
-        }
+            throw std::invalid_argument(
+                "Формат дати має бути YYYY-MM-DD.");
         contractUntil_ = newDate;
-        std::cout << "[INFO] Contract extended until " << newDate << std::endl;
+
+        std::cout << "[INFO] Контракт продовжено до " << newDate << "." <<
+            std::endl;
     }
 
     bool ContractDetails::IsContractValid() const
     {
-        return contractUntil_ != "N/A" && contractUntil_.length() == 10;
+        return contractUntil_ != "Невідомо" && contractUntil_.length() == 10;
     }
 
     void ContractDetails::ShowDetails() const
     {
-        std::cout << " -Club: " << clubName_ << " | Salary: " << std::fixed <<
-            std::setprecision(2) << salary_ << std::endl;
-        std::cout << " -Contract Until: " << contractUntil_;
+        std::cout << "\n=== Інформація про контракт ===" << std::endl;
+        std::cout << "Клуб: " << clubName_
+            << " | Зарплата: " << std::fixed << std::setprecision(2)
+            << salary_ << " €" << std::endl;
+        std::cout << "Контракт дійсний до: " << contractUntil_;
 
         if (isLoaned_)
-        {
-            std::cout << " (ON LOAN intil: " << loanEndDate_ << ")";
-        }
+            std::cout << " (Оренда до: " << loanEndDate_ << ")";
         std::cout << std::endl;
     }
 }

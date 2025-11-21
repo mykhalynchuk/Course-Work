@@ -6,7 +6,7 @@ namespace FootballManagement
 {
     /**
      * @brief Клас, що інкапсулює всі деталі контракту гравця.
-     * * Використовується для композицій в класах, щ керують гравцями.
+     * Використовується для композиції у класах, що керують гравцями.
      */
     class ContractDetails
     {
@@ -24,31 +24,27 @@ namespace FootballManagement
         ContractDetails();
 
         /**
-         * @brief Конструктор з параметрами для ініціалізації контракту.
-         */
+     * @brief Конструктор із параметрами.
+     * @param clubName Назва клубу.
+     * @param salary Зарплата.
+     * @param contractUntil Дата завершення контракту.
+     */
         ContractDetails(const std::string& clubName, double salary,
-                        std::string contractUntil);
+                        const std::string& contractUntil);
 
-        /**
-         * Копіювальний конструктор.
-         */
+        /** Копіювальний конструктор. */
         ContractDetails(const ContractDetails& other);
 
-        /**
-         * Переміщувальний конструктор.
-         */
+        /** Переміщувальний конструктор. */
         ContractDetails(ContractDetails&& other) noexcept;
 
-        /**
-         * @brief Оператор копіювального присвоєння.
-         */
+        /** @brief Оператор копіювального присвоєння. */
         ContractDetails& operator=(const ContractDetails& other);
 
-        /**
-         * @brief Оператор переміщувального присвоєння.
-         */
+        /** @brief Оператор переміщувального присвоєння. */
         ContractDetails& operator=(ContractDetails&& other) noexcept;
 
+        /** @brief Віртуальний деструктор. */
         virtual ~ContractDetails() = default;
 
         std::string GetClubName() const;
@@ -71,7 +67,7 @@ namespace FootballManagement
         void ReturnFromLoan();
 
         /**
-         * @brief Перевіряє, чи залишилося менше 6 місяців до закінчення контракту.
+         * @brief Перевіряє, чи контракт завершується протягом 6 місяців.
          * @return bool True, якщо контракт скоро закінчиться.
          */
         bool IsExpiringSoon() const;
