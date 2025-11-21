@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <stdexcept>
 #include <utility>
-#include <algorithm>
 
 namespace FootballManagement
 {
@@ -81,21 +80,16 @@ namespace FootballManagement
 
     FieldPlayer::~FieldPlayer()
     {
-        std::cout <<"[DEBUG] FieldPlayer " << GetName() << " destroyed." << std::endl;
+        std::cout << "[DEBUG] Польовий гравець \"" << GetName()
+            << "\" знищений." << std::endl;
     }
 
     int FieldPlayer::GetTotalGoals() const { return totalGoals_; }
-
     int FieldPlayer::GetTotalAssists() const { return totalAssists_; }
-
     int FieldPlayer::GetTotalShots() const { return totalShots_; }
-
     int FieldPlayer::GetTotalTackles() const { return totalTackles_; }
-
     int FieldPlayer::GetTotalGames() const { return totalGames_; }
-
     int FieldPlayer::GetKeyPasses() const { return keyPasses_; }
-
     Position FieldPlayer::GetPosition() const { return position_; }
 
     void FieldPlayer::SetPosition(Position position) { position_ = position; }
@@ -103,9 +97,8 @@ namespace FootballManagement
     void FieldPlayer::UpdateAttackingStats(int goals, int assists, int shots)
     {
         if (goals < 0 || assists < 0 || shots < 0)
-        {
-            throw std::invalid_argument("Statistics updates cannot be negative.");
-        }
+            throw std::invalid_argument(
+                "Помилка: статистика не може бути від’ємною.");
 
         totalGoals_ += goals;
         totalAssists_ += assists;
@@ -115,9 +108,8 @@ namespace FootballManagement
     void FieldPlayer::UpdateDefensiveStats(int tackles)
     {
         if (tackles < 0)
-        {
-            throw std::invalid_argument("Tackles update cannot be negative.");
-        }
+            throw std::invalid_argument(
+                "Помилка: кількість відборів не може бути від’ємною.");
         totalTackles_ += tackles;
     }
 
@@ -129,8 +121,7 @@ namespace FootballManagement
     double FieldPlayer::CalculateConversionRate() const
     {
         if (totalShots_ == 0) return 0.0;
-
-        return ((double)totalGoals_ / totalShots_) * 100.0;
+        return (static_cast<double>(totalGoals_) / totalShots_) * 100.0;
     }
 
     void FieldPlayer::RegisterMatchPlayed()
@@ -147,23 +138,35 @@ namespace FootballManagement
         totalTackles_ = 0;
         keyPasses_ = 0;
 
-        std::cout << "[INFO] Season statistics reset for " << GetName() << "." << std::endl;
+        std::cout << "[INFO] Статистика сезону для гравця \"" << GetName()
+            << "\" успішно обнулена." << std::endl;
     }
 
     void FieldPlayer::ShowInfo() const
     {
-        std::cout << "--- FIELD PLAYER (ID: " << GetPlayerId() << ") ---" << std::endl;
-        std::cout << "Name: " << GetName() << " | Pos: " << (int)position_ << " | Age: " << GetAge() << std::endl;
-        std::cout << "Stats (G/A/Shots): " << totalGoals_ << "/" << totalAssists_ << "/" << totalShots_ << std::endl;
-        std::cout << "Defensive: Tackles=" << totalTackles_ << " | Key Passes=" << keyPasses_ << std::endl;
-        std::cout << "Conversion Rate: " << std::fixed << setprecision(2) << CalculateConversionRate() << "%" << std::endl;
+        std::cout << "\n=== Інформація про польового гравця ===" << std::endl;
+        std::cout << "Ім’я: " << GetName()
+                  << " | Вік: " << GetAge()
+                  << " | Позиція: " << static_cast<int>(position_) << std::endl;
+
+        std::cout << "Матчів: " << totalGames_
+                  << " | Голів: " << totalGoals_
+                  << " | Асистів: " << totalAssists_ << std::endl;
+
+        std::cout << "Удари: " << totalShots_
+                  << " | Відбори: " << totalTackles_
+                  << " | Ключові паси: " << keyPasses_ << std::endl;
+
+        std::cout << "Конверсія ударів: " << std::fixed << std::setprecision(2)
+                  << CalculateConversionRate() << "%" << std::endl;
     }
 
     void FieldPlayer::CelebrateBirthday()
     {
-        std::cout << "[INFO] Happy Birthday, " << GetName() << "! New age (in derived class)." << std::endl;
-    }
+        int newAge = GetAge() + 1;
+        SetAge(newAge);
+
+        std::cout << "[INFO] З днем народження, " << GetName()
+                  << "! Тепер вам " << newAge << " років. "
+                  << "Бажаємо нових перемог!" << std::endl;}
 }
-
-
-

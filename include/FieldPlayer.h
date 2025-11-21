@@ -20,19 +20,39 @@ namespace FootballManagement
         Position position_;
 
     public:
+        /**
+         * @brief Конструктор за замовчуванням.
+         */
         FieldPlayer();
 
+        /**
+    * @brief Конструктор з параметрами.
+    * @param name Ім'я гравця.
+    * @param age Вік гравця.
+    * @param nationality Громадянство.
+    * @param origin Походження.
+    * @param height Зріст.
+    * @param weight Вага.
+    * @param marketValue Ринкова вартість.
+    * @param position Позиція на полі.
+    */
         FieldPlayer(const std::string& name, int age,
                     const std::string& nationality, const std::string& origin,
-                    double height, double weight, Position position);
+                    double height, double weight,double marketValue, Position position);
 
+        /** @brief Копіювальний конструктор. */
         FieldPlayer(const FieldPlayer& other);
+
+        /** @brief Переміщувальний конструктор. */
         FieldPlayer(FieldPlayer&& other) noexcept;
-        FieldPlayer(const std::string& name, int age, const std::string& string, const std::string& origin,
-                    double height, double weight, double market_value, Position position);
+
+        /** @brief Копіювальний оператор присвоєння. */
         FieldPlayer& operator=(const FieldPlayer& other);
+
+        /** @brief Переміщувальний оператор присвоєння. */
         FieldPlayer& operator=(FieldPlayer&& other) noexcept;
 
+        /** @brief Віртуальний деструктор. */
         virtual ~FieldPlayer();
 
         int GetTotalGames() const;
@@ -54,8 +74,8 @@ namespace FootballManagement
         void UpdateAttackingStats(int goals, int assists, int shots);
 
         /**
-         * @brief Оновлює захисну стататистику.
-         * @param tackles Кількість успішних відбборів.
+         * @brief Оновлює захисну статистику.
+         * @param tackles Кількість успішних відборів.
          */
         void UpdateDefensiveStats(int tackles);
 
