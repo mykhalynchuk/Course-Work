@@ -7,8 +7,9 @@
 namespace FootballManagement
 {
     /**
-     * @brief Клас, що представляє гравця, який має діючий контракт із клубом.
-     */
+    * @brief Клас, що представляє гравця з активним контрактом.
+    * Наслідується від FieldPlayer і додає логіку трансферів, оренди та контрактів.
+    */
     class ContractedPlayer : public FieldPlayer
     {
     private:
@@ -19,11 +20,12 @@ namespace FootballManagement
         std::string transferConditions_;
 
     public:
+        /** @brief Конструктор за замовчуванням. */
         ContractedPlayer();
 
         /**
          * @brief Конструктор із параметрами для ініціалізації контрактного гравця.
-         * @param name П.І.Б.
+         * @param name Ім’я гравця.
          * @param age Вік.
          * @param nationality Громадянство.
          * @param origin Походження.
@@ -41,14 +43,22 @@ namespace FootballManagement
                          Position position, double salary,
                          const std::string& contractUntil);
 
+        /** @brief Копіювальний конструктор. */
         ContractedPlayer(const ContractedPlayer& other);
+
+        /** @brief Переміщувальний конструктор. */
         ContractedPlayer(ContractedPlayer&& other) noexcept;
+
+        /** @brief Оператор копіювального присвоєння. */
         ContractedPlayer& operator=(const ContractedPlayer& other);
+
+        /** @brief Оператор переміщувального присвоєння. */
         ContractedPlayer& operator=(ContractedPlayer&& other) noexcept;
 
+        /** @brief Віртуальний деструктор. */
         ~ContractedPlayer() override;
 
-       bool IsListedForTransfer() const;
+        bool IsListedForTransfer() const;
         double GetTransferFee() const;
         ContractDetails GetContractDetails() const;
 
@@ -89,7 +99,8 @@ namespace FootballManagement
          * @param otherClub Клуб, куди відправляється гравець.
          * @param endDate Дата закінчення оренди.
          */
-        void SendOnLoan(const std::string& otherClub, const std::string& endDate);
+        void SendOnLoan(const std::string& otherClub,
+                        const std::string& endDate);
 
 
         double CalculateValue() const override;
@@ -99,6 +110,5 @@ namespace FootballManagement
         double CalculatePerformanceRating() const override = 0;
         std::string Serialize() const override = 0;
         virtual void Deserialize(const std::string& data) override = 0;
-
     };
 }

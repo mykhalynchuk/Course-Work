@@ -25,7 +25,7 @@ namespace FootballManagement
                                        const std::string& contractUntil) :
         FieldPlayer(name, age, nationality, origin, height, weight, marketValue,
                     position),
-        contract_details_(FieldPlayer::GetName(), salary, contractUntil),
+        contract_details_(name, salary, contractUntil),
         listedForTransfer_(false), transferFee_(0.0),
         transferConditions_("")
     {
@@ -85,8 +85,8 @@ namespace FootballManagement
 
     ContractedPlayer::~ContractedPlayer()
     {
-        std::cout << "[DEBUG] ContractedPlayer " << GetName() << " destroyed."
-            << std::endl;
+        std::cout << "[DEBUG] Контрактний гравець \"" << GetName()
+            << "\" видалений." << std::endl;
     }
 
     bool ContractedPlayer::IsListedForTransfer() const
@@ -109,117 +109,158 @@ namespace FootballManagement
                                            const std::string& conditions)
     {
         if (fee <= 0.0)
-        {
-            throw std::invalid_argument("Transfer fee must be positive.");
-        }
+            throw std::invalid_argument(
+                "Трансферна сума має бути додатною.");
+
         listedForTransfer_ = true;
         transferFee_ = fee;
         transferConditions_ = conditions;
-        std::cout << "[INFO]" << GetName() <<
-            " listed for transfer with minimum fee  " << fee << std::endl;
+
+        std::cout << "[INFO] " << GetName() <<
+            " виставлений на трансфер. Мінімальна сума: "
+            << fee << " €." << std::endl;
     }
 
     void ContractedPlayer::RemoveFromTransferList()
     {
         listedForTransfer_ = false;
         transferFee_ = 0.0;
-        transferConditions_ = "";
-        std::cout << "[INFO] " << GetName() << " removed from transfer list." <<
-            std::endl;
+        transferConditions_.clear();
+
+        std::cout << "[INFO] " << GetName() << " знятий із трансферного списку."
+            << std::endl;
     }
 
     void ContractedPlayer::TransferToClub(const std::string& newClub,
                                           double fee)
     {
-        if (!listedForTransfer_ || fee < transferFee_)
+        if (!listedForTransfer_)
         {
-            std::cout << "[FAIL] Cannot sell " << GetName() <<
-                ": Either not listed or fee is too low" << std::endl;
+            std::cout << "[FAIL] Гравець не виставлений на трансфер." <<
+                std::endl;
             return;
         }
-        contract_details_.SetClubName(newClub);
-        listedForTransfer_ = false;
-        std::cout << "[SUCCESS] " << GetName() << " sold to " << newClub <<
-            " for " << fee << "!" << std::endl;
-    }
 
-    void ContractedPlayer::ExtendContract(const std::string& newDate,
-                                          double newSalary)
-    {
-        if (newSalary <= 0)
+        if (fee < transferFee_)
         {
-            throw std::invalid_argument
-                ("New salary must be positive.");
+            std::cout << "[FAIL] Сума " << fee <<
+                " € менша за мінімальну ціну (" << transferFee_ << " €)." <<
+                std::endl;
+            return;
         }
 
-        contract_details_.ExtendContractDate(newDate);
-        double percentage = (newSalary / contract_details_.GetSalary() - 1.0) * 100.0;
-        contract_details_.AdjustSalary(percentage);
+        contract_details_.SetClubName(newClub);
+        listedForTransfer_ = false;
 
-        std::cout << "[SUCCESS] Contract for " << GetName() << " extended until " << newDate << std::endl;
+        std::cout << "[SUCCESS] " << GetName() << " проданий у клуб \"" <<
+            newClub
+            << "\" за " << fee << " €." << std::endl;
+    }
+
+    void ContractedPlayer::ExtendedContract(const std::string& newDate,
+                                          double newSalary)
+    {
+        if (newSalary <= 0.0)
+            throw std::invalid_argument(
+                "Зарплата повинна бути додатною.");
+
+        double oldSalary = contract_details_.GetSalary();
+        contract_details_.ExtendContractDate(newDate);
+
+        double percentageChange = ((newSalary - oldSalary) / oldSalary) * 100.0;
+        contract_details_.AdjustSalary(percentageChange);
+
+        std::cout << "[INFO] Контракт " << GetName() << " продовжено до " <<
+            newDate
+            << ". Нова зарплата: " << newSalary << " €." << std::endl;
     }
 
     void ContractedPlayer::TerminateContract(const std::string& reason)
     {
-        contract_details_.SetClubName("N/A (Terminated)");
-        std::cout << "[WARNING] Contract for " << GetName() << " terminated due to: " << reason << std::endl;
+        contract_details_.SetClubName("Без клубу (контракт розірвано)");
+        std::cout << "[WARNING] Контракт " << GetName() <<
+            " розірвано. Причина: " << reason << std::endl;
     }
 
-    void ContractedPlayer::SendOnLoan(const std::string& otherClub, const std::string& endDate)
+    void ContractedPlayer::SendOnLoan(const std::string& otherClub,
+                                      const std::string& endDate)
     {
-        contract_details_.SetOnLoan(otherClub + " - " + endDate);
-        std::cout << "[INFO] " << GetName() << " sent on loan to " << otherClub << " until " << endDate << std::endl;
+        contract_details_.SetOnLoan(endDate);
+        std::cout << "[INFO] " << GetName() << " відправлений в оренду до " <<
+            otherClub
+            << " до " << endDate << "." << std::endl;
     }
 
     void ContractedPlayer::ShowInfo() const
     {
+        std::cout << "\n=== КОНТРАКТНИЙ ГРАВЕЦЬ ===" << std::endl;
         FieldPlayer::ShowInfo();
-        std::cout << "--- CONTRACT DETAILS---" << std::endl;
         contract_details_.ShowDetails();
-        if (listedForTransfer_){
-            std::cout << "TRANSFER STATUS: Listed for Transfer | Fee: " << std::fixed << std::setprecision(0) << transferFee_ << std::endl;
+
+        if (listedForTransfer_)
+        {
+            std::cout << "Статус трансферу: У списку | Мін. сума: "
+                << std::fixed << std::setprecision(2)
+                << transferFee_ << " €" << std::endl;
+        }
+        else
+        {
+            std::cout << "Статус трансферу: Не виставлений" << std::endl;
         }
     }
 
     double ContractedPlayer::CalculateValue() const
     {
-        double performanceFactor = CalculatePerformanceRating() / 10;
         double baseValue = GetMarketValue();
+        double performanceBonus = CalculatePerformanceRating() * 50000.0;
+        double salaryImpact = contract_details_.GetSalary() / 10000.0;
 
-        double contractMultiplier = contract_details_.GetSalary() * 3.0;
+        return baseValue + performanceBonus + salaryImpact;
+    }
 
-        return baseValue * (1.0 + performanceFactor) + contractMultiplier;
+    std::string ContractedPlayer::GetStatus() const
+    {
+        if (IsInjured())
+            return "Травмований гравець";
+        if (contract_details_.IsPlayerOnLoan())
+            return "В оренді";
+        return "Активний гравець";
     }
 
     void ContractedPlayer::CelebrateBirthday()
     {
-        Player::CelebrateBirthday();
-        if (GetAge() > 30)
-        {
-            UpdateMarketValue(-5.0);
-        }
+        int newAge = GetAge() + 1;
+        SetAge(newAge);
+        std::cout << "[INFO] З днем народження, " << GetName()
+            << "! Тепер вам " << newAge << " років." << std::endl;
+
+        if (newAge > 30)
+            UpdateMarketValue(-3.0);
     }
 
     double ContractedPlayer::CalculatePerformanceRating() const
     {
-        return FieldPlayer::CalculatePerformanceRating();
+        return 0.0;
     }
 
     std::string ContractedPlayer::Serialize() const
     {
         std::stringstream ss;
-
-        ss << FieldPlayer::Serialize() << "," << contract_details_.GetClubName() << "," << contract_details_.GetSalary() << "," << contract_details_.GetContractUntil() << "," << listedForTransfer_ << "," << transferFee_ << "," << transferConditions_;
+        ss << FieldPlayer::Serialize()
+            << "," << contract_details_.GetClubName()
+            << "," << contract_details_.GetSalary()
+            << "," << contract_details_.GetContractUntil()
+            << "," << listedForTransfer_
+            << "," << transferFee_
+            << "," << transferConditions_;
         return ss.str();
     }
 
     void ContractedPlayer::Deserialize(const std::string& data)
     {
         FieldPlayer::Deserialize(data);
-        std::cout << "[WARNING] ContractedPlayer::Deserialize requires full parsing logic." << std::endl;
+        std::cout <<
+            "[WARNING] Логіка десеріалізації ContractedPlayer ще не реалізована."
+            << std::endl;
     }
-
-
-
-
 }
