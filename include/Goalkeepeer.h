@@ -5,6 +5,10 @@
 
 namespace FootballManagement
 {
+    /**
+    * @brief Клас, що представляє воротаря футбольної команди.
+    * Містить статистику та методи, специфічні для воротарської позиції.
+    */
     class Goalkeeper : public Player
     {
     private:
@@ -15,17 +19,36 @@ namespace FootballManagement
         int penaltiesSaved_;
 
     public:
+        /** @brief Конструктор за замовчуванням. */
         Goalkeeper();
 
+        /**
+       * @brief Конструктор з параметрами.
+       * @param name Ім'я гравця.
+       * @param age Вік гравця.
+       * @param nationality Громадянство.
+       * @param origin Походження.
+       * @param height Зріст.
+       * @param weight Вага.
+       * @param marketValue Ринкова вартість.
+       */
         Goalkeeper(const std::string& name, int age,
-                    const std::string& nationality, const std::string& origin,
-                    double height, double weight, double marketValue);
+                   const std::string& nationality, const std::string& origin,
+                   double height, double weight, double marketValue);
 
+        /** @brief Копіювальний конструктор. */
         Goalkeeper(const Goalkeeper& other);
+
+        /** @brief Переміщувальний конструктор. */
         Goalkeeper(Goalkeeper&& other) noexcept;
+
+        /** @brief Оператор копіювального присвоєння. */
         Goalkeeper& operator=(const Goalkeeper& other);
+
+        /** @brief Оператор переміщувального присвоєння. */
         Goalkeeper& operator=(Goalkeeper&& other) noexcept;
 
+        /** @brief Віртуальний деструктор. */
         virtual ~Goalkeeper();
 
         int GetMatchesPlayed() const;
@@ -68,19 +91,25 @@ namespace FootballManagement
          */
         void ResetSeasonStats();
 
+        /** @brief Виводить інформацію про воротаря. */
         void ShowInfo() const override;
+
+        /** @brief Розраховує ринкову вартість гравця. */
         double CalculateValue() const override;
+
+        /** @brief Повертає статус гравця (Active / Injured). */
         std::string GetStatus() const override;
+
+        /** @brief Збільшує вік на 1 рік і виводить повідомлення. */
         void CelebrateBirthday() override;
 
-        /**
-         * @brief Розрахування показник ефективності на основі унікадьних метрик воротаря.
-         * @return double Рейтинг ефективності воротаря.
-         */
+        /** @brief Розраховує рейтинг ефективності воротаря. */
         double CalculatePerformanceRating() const override;
 
+        /** @brief Серіалізує об’єкт у текстовий формат. */
         std::string Serialize() const override;
-        void Deserialize(const std::string& data) override;
 
+        /** @brief Десеріалізує об’єкт із рядка. */
+        void Deserialize(const std::string& data) override;
     };
 }
