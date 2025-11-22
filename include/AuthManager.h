@@ -11,18 +11,18 @@
 namespace FootballManagement
 {
     /**
-     * @brief Singleton клас, що відповідає за автентифікацію та управління обліковими записами.
-     */
+      * @brief Керує користувачами системи, їх реєстрацією, входом та ролями.
+      *
+      * Реалізовано як Singleton, щоб гарантувати наявність лише одного менеджера користувачів у системі.
+      */
     class AuthManager : public IFileHandler
     {
     private:
-        //Карта для зберігання користувачів: <userName, User object>
         std::map<std::string, std::shared_ptr<User>> registeredUsers_;
-
-        //Поточний користувач. За замовчуванням - Guest.
         std::shared_ptr<User> currentUser_;
 
         AuthManager();
+
         AuthManager(const AuthManager&) = delete;
         AuthManager& operator=(const AuthManager&) = delete;
 
@@ -33,16 +33,21 @@ namespace FootballManagement
         static AuthManager& GetInstance();
 
         /**
-         * @brief Реєстрація нового користувача.
-         * @return bool Результат реєстрації.
-         */
+          * @brief Реєструє нового користувача.
+          * @param userName Логін.
+          * @param password Пароль.
+          * @param userRole Роль користувача (Admin або StandardUser).
+          * @return true, якщо користувача зареєстровано успішно.
+          */
         bool Register(const std::string& userName, const std::string& password,
                       UserRole userRole = UserRole::StandardUser);
 
         /**
-         * @brief Автентифікація користувача.
-         * @return bool Результат входу.
-         */
+        * @brief Авторизує користувача в системі.
+        * @param userName Ім’я користувача.
+        * @param password Пароль.
+        * @return true, якщо вхід успішний.
+        */
         bool Login(const std::string& userName, const std::string& password);
 
         /**
@@ -51,15 +56,18 @@ namespace FootballManagement
         void Logout();
 
         /**
-         * @brief Видалення облікового запису.
-         * @return bool Результат видалення.
-         */
+        * @brief Видаляє користувача із системи (доступно лише адміну).
+        * @param userName Ім’я користувача, якого потрібно видалити.
+        * @return true, якщо видалення успішне.
+        */
         bool DeleteUser(const std::string& userName);
 
         /**
-         * @brief Зміна ролі іншого користувача (Admin функціонал).
-         * @return bool Результати змін.
-         */
+        * @brief Змінює роль користувача (Admin-можливість).
+        * @param userName Ім’я користувача.
+        * @param newRole Нова роль.
+        * @return true, якщо роль успішно змінено.
+        */
         bool ChangeUserRole(const std::string& userName, UserRole newRole);
 
         /**

@@ -22,24 +22,24 @@ namespace FootballManagement
     {
         if (registeredUsers_.count(userName) > 0)
         {
-            std::cout << "[FAIL] Registration failed: Username '" << userName <<
-                "' already exists." << std::endl;
+            std::cout << "[ПОМИЛКА] Користувач '" << userName
+                << "' уже існує." << std::endl;
             return false;
         }
 
         if (userName.length() < 3 || password.length() < 6)
         {
             std::cout <<
-                "[FAIL] Registration failed: Username (min 3) or Password (min 6) is too short."
-                << std::endl;
+                "[ПОМИЛКА] Логін має бути ≥3 символів, пароль ≥6 символів." <<
+                std::endl;
             return false;
         }
 
         auto newUser = std::make_shared<User>(userName, password, userRole);
         registeredUsers_[userName] = newUser;
 
-        std::cout << "[SUCCESS] User '" << userName << "' registered." <<
-            std::endl;
+        std::cout << "[УСПІХ] Користувача '" << userName << "' зареєстровано."
+            << std::endl;
 
         return true;
     }
@@ -49,8 +49,8 @@ namespace FootballManagement
     {
         if (registeredUsers_.find(userName) == registeredUsers_.end())
         {
-            std::cout << "[FAIL] Login failed: User '" << userName <<
-                "' not found." << std::endl;
+            std::cout << "[ПОМИЛКА] Користувача '" << userName <<
+                "' не знайдено." << std::endl;
             return false;
         }
 
@@ -59,13 +59,14 @@ namespace FootballManagement
         if (user->VerifyPassword(password))
         {
             currentUser_ = user;
-            std::cout << "[SUCCESS] User '" << userName << "' logged in. Role: "
-                << (user->IsAdmin() ? "Admin" : "Standard") << std::endl;
+            std::cout << "[ВХІД] Вітаємо, " << userName << "! Роль: "
+                << (user->IsAdmin() ? "Адміністратор" : "Користувач") <<
+                std::endl;
             return true;
         }
         else
         {
-            std::cout << "[FAIL] Login failed: Incorrect password for user '" <<
+            std::cout << "[ПОМИЛКА] Невірний пароль для користувача '" <<
                 userName << "'." << std::endl;
             return false;
         }
@@ -75,12 +76,13 @@ namespace FootballManagement
     {
         if (IsLoggedIn())
         {
-            currentUser_->Logout();
+            std::cout << "[INFO] Користувач '" << currentUser_->GetUserName() <<
+                "' вийшов із системи." << std::endl;
             currentUser_ = std::make_shared<User>();
         }
         else
         {
-            std::cout << "[INFO] Already logged out." << std::endl;
+            std::cout << "[INFO] Ви не залогінені." << std::endl;
         }
     }
 
@@ -88,15 +90,17 @@ namespace FootballManagement
     {
         if (!IsLoggedIn() || !currentUser_->IsAdmin())
         {
-            std::cout << "[FAIL] Deletion denied: Only Admin can delete users."
-                << std::endl;
+            std::cout <<
+                "[ВІДМОВА] Лише адміністратор може видаляти користувачів." <<
+                std::endl;
             return false;
         }
 
         if (userName == currentUser_->GetUserName())
         {
             std::cout <<
-                "[FAIL] Deletion denied: Cannot delete your own active account."
+                std::cout <<
+                "[ПОМИЛКА] Ви не можете видалити свій активний обліковий запис."
                 << std::endl;
             return false;
         }
@@ -105,18 +109,15 @@ namespace FootballManagement
 
         registeredUsers_.erase(userName);
 
-        if (registeredUsers_.size() < initialSize)
+        if (registeredUsers_.size() < before)
         {
-            std::cout << "[SUCCESS] User '" << userName << "' deleted by Admin."
-                << std::endl;
+            std::cout << "[УСПІХ] Користувача '" << userName << "' видалено." <<
+                std::endl;
             return true;
         }
-        else
-        {
-            std::cout << "[FAIL] Deletion failed: User '" << userName <<
-                "' not found." << std::endl;
-            return false;
-        }
+        std::cout << "[ПОМИЛКА] Користувача '" << userName << "' не знайдено."
+            << std::endl;
+        return false;
     }
 
     bool AuthManager::ChangeUserRole(const std::string& userName,
@@ -124,8 +125,7 @@ namespace FootballManagement
     {
         if (!IsLoggedIn() || !currentUser_->IsAdmin())
         {
-            std::cout <<
-                "[FAIL] Role change denied: Only Admin can change user roles."
+            std::cout << "[ВІДМОВА] Тільки адміністратор може змінювати ролі."
                 << std::endl;
             return false;
         }
@@ -133,33 +133,33 @@ namespace FootballManagement
         auto it = registeredUsers_.find(userName);
         if (it != registeredUsers_.end())
         {
-            it->second->SetRole(newRole);
-            return true;
-        }
-        else
-        {
-            std::cout << "[FAIL] Role change failed: User '" << userName <<
-                "' not found." << std::endl;
+            std::cout << "[ПОМИЛКА] Користувача '" << userName <<
+                "' не знайдено." << std::endl;
             return false;
         }
+        it->second->SetRole(newRole);
+        std::cout << "[INFO] Роль користувача '" << userName << "' змінено." <<
+            std::endl;
+        return true;
     }
 
     void AuthManager::ViewAllUsers() const
     {
         if (!IsLoggedIn() || !currentUser_->IsAdmin())
         {
-            std::cout << "[FAIL] Access denied: Only Admin can view all users."
+            std::cout <<
+                "[ВІДМОВА] Лише адміністратор може переглядати список користувачів."
                 << std::endl;
             return;
         }
 
-        std::cout << "\n--- REGISTERED USERS (" << registeredUsers_.size() <<
-            ") ---" << std::endl;
-        for (const auto& pair : registeredUsers_)
+        std::cout << "\n=== СПИСОК КОРИСТУВАЧІВ (" << registeredUsers_.size() <<
+            ") ===" << std::endl;
+        for (const auto& [name, user] : registeredUsers_)
         {
-            pair.second->ShowUserInfo();
+            user->ShowUserInfo();
         }
-        std::cout << "-----------------------------------\n" << std::endl;
+        std::cout << "==========================================" << std::endl;
     }
 
     std::shared_ptr<User> AuthManager::GetCurrentUser() const
@@ -169,21 +169,18 @@ namespace FootballManagement
 
     bool AuthManager::IsLoggedIn() const
     {
-        return currentUser_->GetUserRole() != UserRole::Guest;
+        return currentUser_ && currentUser_->GetUserRole() != UserRole::Guest;
     }
 
     std::string AuthManager::Serialize() const
     {
         std::stringstream ss;
         bool first = true;
-
-        for (const auto& pair : registeredUsers_)
+        for (const auto& [_, user] : registeredUsers_)
         {
             if (!first)
-            {
                 ss << "\n";
-            }
-            ss << pair.second->Serialize();
+            ss << user->Serialize();
             first = false;
         }
         return ss.str();
@@ -193,9 +190,12 @@ namespace FootballManagement
     {
         if (!data.empty())
         {
-            std::cout <<
-                "[WARNING] AuthManager::Deserialize called. Use DeserializeAllUsers."
-                << std::endl;
+            if (!data.empty())
+            {
+                std::cout <<
+                    "[ПОПЕРЕДЖЕННЯ] Використовуйте DeserializeAllUsers для повного завантаження."
+                    << std::endl;
+            }
         }
     }
 
@@ -203,45 +203,40 @@ namespace FootballManagement
         const std::vector<std::string>& userDatas)
     {
         registeredUsers_.clear();
-        int loadedCount = 0;
+        int count = 0;
 
-        for (const std::string& data : userDatas)
+        for (const auto& data : userDatas)
         {
+            if (data.empty()) continue;
+
             try
             {
-                if (data.empty()) continue;;
-
                 auto tempUser = std::make_shared<User>();
                 tempUser->Deserialize(data);
 
-                if (!tempUser->GetUserName().empty() && tempUser->GetUserRole()
-                    != UserRole::Guest && registeredUsers_.find(
-                        tempUser->GetUserName()) == registeredUsers_.end())
+                if (!tempUser->GetUserName().empty())
                 {
-                    registeredUsers_[tempUser->GetUserName()] =
-                        tempUser;
-                    loadedCount++;
+                    registeredUsers_[tempUser->GetUserName()] = tempUser;
+                    count++;
                 }
             }
-            catch (const exception& e)
+            catch (const std::exception& e)
             {
-                std::cout << "[ERROR] Skipped user data due to error: " << e.
-                    what() << std::endl;
+                std::cout << "[ПОМИЛКА] Пропущено користувача через помилку: "
+                    << e.what() << std::endl;
             }
         }
 
-        std::cout << "[INFO] AuthManager loaded " << loadedCount << " users." <<
-            std::endl;
-
-        if (registeredUsers_.empty())
+        if (count == 0)
         {
             std::cout <<
-                "[WARNING] No users found. Creating default Admin user." <<
-                std::endl;
+                "[ПОПЕРЕДЖЕННЯ] Користувачів не знайдено. Створюється обліковий запис адміністратора за замовчуванням."
+                << std::endl;
             Register(DEFAULT_ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD,
                      UserRole::Admin);
         }
 
+        std::cout << "[INFO] Завантажено користувачів: " << count << std::endl;
         currentUser_ = std::make_shared<User>();
     }
 }
