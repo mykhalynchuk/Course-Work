@@ -101,13 +101,10 @@ namespace FootballManagement
 
     void FreeAgent::SetMonthWithoutClub(int months)
     {
-        if (months < 0)
-        {
             if (months < 0)
                 throw std::invalid_argument(
                     "Кількість місяців без клубу не може бути від’ємною.");
             monthsWithoutClub_ = months;
-        }
     }
 
     bool FreeAgent::NegotiateOffer(double offer)

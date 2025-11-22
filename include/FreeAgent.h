@@ -17,6 +17,7 @@ namespace FootballManagement
         int monthsWithoutClub_;
         bool availableForNegotiation_;
 
+
     public:
         /** @brief Конструктор за замовчуванням. */
         FreeAgent();
