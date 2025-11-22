@@ -22,11 +22,22 @@ namespace FootballManagement
         double transferBudget_;
         std::string clubName_;
 
+        /**
+       * @brief Генерує унікальний ID для нового гравця.
+       * @return Новий унікальний ID.
+       */
         int generateUniqueId() const;
 
     public:
+        /**
+       * @brief Конструктор із параметрами.
+       * @param name Назва клубу.
+       * @param budget Початковий бюджет.
+       */
         explicit ClubManager(const std::string& name = "Default Club",
                     double budget = 10000000.0);
+
+        /** @brief Віртуальний деструктор. */
         ~ClubManager() noexcept override = default;
 
         double GetTransferBudget() const;

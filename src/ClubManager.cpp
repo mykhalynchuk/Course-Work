@@ -8,88 +8,85 @@
 
 namespace FootballManagement
 {
-    ClubManager::ClubManager(const std::string& clubName,
-                             double transferBudget) :
-        transferBudget_(transferBudget), clubName_(clubName)
+    ClubManager::ClubManager(const std::string& name,
+                             double budget) :
+        transferBudget_(budget), clubName_(name)
     {
-        std::cout << "[INFO] Club Manager initialized for " << clubName_ <<
-            " (Budget: " << transferBudget_ << ")." << std::endl;
+        std::cout << "[INFO] Менеджер клубу \"" << clubName_
+            << "\" ініціалізований (Бюджет: " << transferBudget_ << " €)." <<
+            std::endl;
     }
 
     double ClubManager::GetTransferBudget() const { return transferBudget_; }
 
-    void ClubManager::SetTransferBudget(double transferBudget)
+    void ClubManager::SetTransferBudget(double budget)
     {
-        if (transferBudget < 0.0)
-        {
-            throw std::invalid_argument("Budget cannot be negative.");
-            transferBudget_ = transferBudget;
-        }
+        if (budget < 0.0)
+            throw std::invalid_argument(
+                "Бюджет не може бути від’ємним.");
+        transferBudget_ = budget;
     }
 
     std::string ClubManager::GetClubName() const { return clubName_; }
 
-    std::string ClubManager::generateUniqueId() const
+    std::string ClubManager::GenerateUniqueId() const
     {
-        if (players_.empty())
-        {
-            return 1001;
-        }
-        int maxId = 0;
+        int maxId = 1000;
         for (const auto& p : players_)
         {
             if (p->GetPlayerId() > maxId)
-            {
                 maxId = p->GetPlayerId();
-            }
         }
         return maxId + 1;
     }
 
     void ClubManager::AddPlayer(std::shared_ptr<Player> p)
     {
+        if (!p)
+            throw std::invalid_argument("Неможливо додати порожнього гравця.");
+
         if (p->GetPlayerId() == 0)
-        {
-            p->SetPlayerId(generateUniqueId());
-        }
+            p->SetPlayerId(GenerateUniqueId());
+
         players_.push_back(p);
-        std::cout << "[SUCCESS] Added player " << p->GetName() << " (ID: " << p
-            ->GetPlayerId() << ")." << std::endl;
+        std::cout << "[SUCCESS] Додано гравця: " << p->GetName()
+            << " (ID: " << p->GetPlayerId() << ")." << std::endl;
     }
 
     void ClubManager::ViewAllPlayers() const
     {
-        std::cout << "\n--- ALL PLAYERS IN " << clubName_ << " (" << players_.
-            size() << ") ---" << std::endl;
+        std::cout << "\n=== СКЛАД КЛУБУ \"" << clubName_ << "\" ===" <<
+            std::endl;
+        if (players_.empty())
+        {
+            std::cout << "Немає зареєстрованих гравців." << std::endl;
+            return;
+        }
+
         for (const auto& p : players_)
         {
             p->ShowInfo();
-            std::cout << "-----------------------------------" << std::endl;
+            std::cout << "--------------------------------------------" <<
+                std::endl;
         }
     }
 
     void ClubManager::RemovePlayers(int playerId)
     {
-        auto initialSize = players_;
+        auto oldSize = players_.size();
+        players_.erase(std::remove_if(players_.begin(), players_.end(),
+                                      [playerId](const auto& p)
+                                      {
+                                          return p->GetPlayerId() == playerId;
+                                      }),
+                       players_.end());
 
-        auto it = std::remove_if(players_.begin(), players_.end(),
-                                 [&](const auto& p)
-                                 {
-                                     return p->GetPlayerId() == playerId;
-                                 });
-
-        players_.erase(it, players_.end());
-
-        if (players_.size() < initialSize)
-        {
-            std::cout << "[SUCCESS] Player ID " << playerId << " removed." <<
+        if (players_.size() < oldSize)
+            std::cout << "[SUCCESS] Гравця з ID " << playerId << " видалено." <<
                 std::endl;
-        }
         else
-        {
-            std::cout << "[FAIL] Player with ID " << playerId << " not found."
-                << std::endl;
-        }
+            std::cout << "[FAIL] Гравця з ID " << playerId << " не знайдено." <<
+                std::endl;
     }
 
     void ClubManager::SortByPerformanceRating()
@@ -100,8 +97,7 @@ namespace FootballManagement
                       return a->CalculatePerformanceRating() > b->
                           CalculatePerformanceRating();
                   });
-        std::cout <<
-            "[INFO] Players sorted by Performance Rating (highest first)." <<
+        std::cout << "[INFO] Гравці відсортовані за рейтингом ефективності." <<
             std::endl;
     }
 
@@ -115,23 +111,19 @@ namespace FootballManagement
 
         for (const auto& p : players_)
         {
-            std::string lowerName = p->GetName();
-            std::transform(lowerName.begin(), lowerName.end(),
-                           lowerName.begin(), ::tolower);
+            std::string name = p->GetName();
+            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-            if (lowerName.find(lowerQuery) != std::string::npos)
-            {
+            if (name.find(lowerQuery) != std::string::npos)
                 results.push_back(p);
-            }
         }
         return results;
     }
 
-    std::vector<std::shared_ptr<Player>> ClubManager::SearchByName(
-        const std::string& nameQuery) const
+    std::vector<std::shared_ptr<Player>> ClubManager::FilterByStatus(
+        const std::string& status) const
     {
         std::vector<std::shared_ptr<Player>> filtered;
-
         std::string lowerStatus = status;
         std::transform(lowerStatus.begin(), lowerStatus.end(),
                        lowerStatus.begin(), ::tolower);
@@ -143,10 +135,9 @@ namespace FootballManagement
                            playerStatus.begin(), ::tolower);
 
             if (playerStatus.find(lowerStatus) != std::string::npos)
-            {
                 filtered.push_back(p);
-            }
         }
+
         return filtered;
     }
 
@@ -154,27 +145,38 @@ namespace FootballManagement
                                     double salaryOffer,
                                     const std::string& contractUntil)
     {
-        if (!player || player->GetStatus().find("free agent") ==
-            std::string::npos) return false;
-
-        if (salaryOffer * 5.0 > transferBudget_)
+        if (!player)
         {
-            std::cout << "[FAIL] Insufficient budget for contract commitment."
+            std::cout << "[FAIL] Неможливо підписати: гравець не визначений." <<
+                std::endl;
+            return false;
+        }
+
+        if (salaryOffer <= 0)
+        {
+            std::cout << "[FAIL] Некоректна сума зарплати." << std::endl;
+            return false;
+        }
+
+        if (salaryOffer > transferBudget_)
+        {
+            std::cout << "[FAIL] Недостатньо коштів у бюджеті для підписання."
                 << std::endl;
             return false;
         }
 
         if (!player->NegotiateOffer(salaryOffer))
         {
-            std::cout << "[FAIL] Free agent rejected the offer." << std::endl;
+            std::cout << "[FAIL] Гравець відхилив пропозицію." << std::endl;
             return false;
         }
 
         player->AcceptContract(clubName_);
-        transferBudget_ -= (salaryOffer * 0.1);
+        transferBudget_ -= salaryOffer;
 
-        std::cout << "[SUCCESS] " << player->GetName() <<
-            " SIGNED! Budget remaining: " << transferBudget_ << std::endl;
+        std::cout << "[SUCCESS] Вільний агент " << player->GetName()
+            << " підписаний із клубом " << clubName_
+            << ". Залишок бюджету: " << transferBudget_ << " €." << std::endl;
 
         return true;
     }
@@ -183,29 +185,31 @@ namespace FootballManagement
     {
         std::stringstream ss;
         ss << clubName_ << "," << transferBudget_ << "\n";
-
         for (const auto& p : players_)
-        {
             ss << p->Serialize() << "\n";
-        }
         return ss.str();
     }
 
     void ClubManager::Deserialize(const std::string& data)
     {
-        if (!data.empty())
-        {
-            std::cout <<
-                "[WARNING] ClubManager::Deserialize called. Use DeserializeAllPlayers."
-                << std::endl;
-        }
+        if (data.empty()) return;
+
+        std::cout <<
+            "[WARNING] Використовуйте DeserializeAllPlayers для повного завантаження."
+            << std::endl;
     }
 
     void ClubManager::DeserializeAllPlaters(
         const std::vector<std::string>& lines)
     {
         players_.clear();
-        if (lines.empty()) return;
+
+        if (lines.empty())
+        {
+            std::cout << "[WARNING] Порожній файл — гравців не знайдено." <<
+                std::endl;
+            return;
+        }
 
         try
         {
@@ -213,23 +217,19 @@ namespace FootballManagement
             std::string budgetStr;
             getline(ss, clubName_, ',');
             if (getline(ss, budgetStr))
-            {
                 transferBudget_ = stod(budgetStr);
-            }
-            std::cout << "[INFO] Loaded club metadata: " << clubName_ <<
-                ", Budget: " << transferBudget_ << std::endl;
+
+            std::cout << "[INFO] Завантажено дані клубу: " << clubName_
+                << " | Бюджет: " << transferBudget_ << " €." << std::endl;
         }
         catch (const std::exception& e)
         {
-            std::cout << "[ERROR] Failed to parse club metadata: " << e.what()
+            std::cout << "[ERROR] Помилка при розборі даних клубу: " << e.what()
                 << std::endl;
         }
 
-        for (std::size_t i = 1; i < lines.size(); i++)
-        {
-        }
         std::cout <<
-            "[WARNING] Player loading logic is incomplete. Need type identification."
+            "[WARNING] Логіка створення гравців при завантаженні поки не реалізована."
             << std::endl;
     }
 }
