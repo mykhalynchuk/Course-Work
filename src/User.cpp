@@ -3,11 +3,14 @@
 #include <sstream>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 namespace FootballManagement
 {
-    User::User() : userName_(DEFAULT_ADMIN_LOGIN),
-                   password_(DEFAULT_ADMIN_PASSWORD), userRole_(UserRole::Guest)
+    User::User()
+        : userName_("guest"),
+          password_(""),
+          userRole_(UserRole::Guest)
     {
     }
 
@@ -15,6 +18,11 @@ namespace FootballManagement
                UserRole userRole) : userName_(userName), password_(password),
                                     userRole_(userRole)
     {
+        if (userName_.empty())
+            throw std::invalid_argument("Логін не може бути порожнім.");
+        if (password_.size() < 0)
+        {
+        }
     }
 
     User::User(const User& other) : userName_(other.userName_),
@@ -56,19 +64,19 @@ namespace FootballManagement
 
     User::~User()
     {
-        std::cout << "[DEBUG] User " << userName_ << " destroyed." << std::endl;
+        std::cout << "[DEBUG] Користувача \"" << userName_
+            << "\" знищено." << std::endl;
     }
 
     std::string User::GetUserName() const { return userName_; }
-
     std::string User::GetPassword() const { return password_; }
+    UserRole User::GetUserRole() const { return userRole_; }
 
     void User::SetUserName(const std::string& userName)
     {
         if (userName.empty())
-        {
-            throw std::invalid_argument("Username cannot be empty.");
-        }
+            throw std::invalid_argument(
+                "Логін не може бути порожнім.");
         userName_ = userName;
     }
 
@@ -82,20 +90,21 @@ namespace FootballManagement
     {
         if (!VerifyPassword(oldPassword))
         {
-            std::cout << "[FAIL] Incorrect old password provided." << std::endl;
+            std::cout << "[FAIL] Невірний поточний пароль." << std::endl;
             return false;
         }
 
         if (newPassword.length() < 6)
         {
-            std::cout << "[FAIL] New password is too short (min 6 chars)." <<
-                std::endl;
+            std::cout <<
+                "[FAIL] Новий пароль занадто короткий (мінімум 6 символів)."
+                << std::endl;
             return false;
         }
 
         password_ = newPassword;
-        std::cout << "[SUCCESS] Password for user " << userName_ << " changed."
-            << std::endl;
+        std::cout << "[SUCCESS] Пароль для користувача \"" << userName_
+            << "\" змінено." << std::endl;
         return true;
     }
 
@@ -107,26 +116,38 @@ namespace FootballManagement
     void User::SetRole(UserRole newRole)
     {
         userRole_ = newRole;
-        std::cout << "[INFO] Role for " << userName_ << " set." << std::endl;
+        std::cout << "[INFO] Роль користувача \"" << userName_
+            << "\" встановлено." << std::endl;
     }
 
     void User::ShowUserInfo() const
     {
-        std::string roleString = (userRole_ == UserRole::Admin)
-                                     ? "Admin"
-                                     : (userRole_ == UserRole::StandardUser)
-                                     ? "standart"
-                                     : "Guest";
+        std::string roleStr;
+        switch (userRole_)
+        {
+        case UserRole::Admin: roleStr = "Адміністратор";
+            break;
+        case UserRole::StandardUser: roleStr = "Користувач";
+            break;
+        default: roleStr = "Гість";
+            break;
+        }
 
-        std::cout << "User: " << userName_ << " | Role: " << roleString <<
-            std::endl;
+        std::cout << "Користувач: " << userName_
+            << " | Роль: " << roleStr << std::endl;
+    }
+
+    void User::Logout()
+    {
+        std::cout << "[INFO] Користувач \"" << userName_
+                  << "\" вийшов із системи." << std::endl;
     }
 
     std::string User::Serialize() const
     {
         std::stringstream ss;
-        ss << userName_ << ":" << password_ << ":" << static_cast<int>(
-            userRole_);
+        ss << userName_ << ":" << password_ << ":"
+           << static_cast<int>(userRole_);
         return ss.str();
     }
 
@@ -138,27 +159,32 @@ namespace FootballManagement
             std::string token;
             std::vector<std::string> parts;
 
-            while (std::getline(ss, token, ":"))
-            {
+            while (std::getline(ss, token, ':'))
                 parts.push_back(token);
-            }
 
             if (parts.size() != 3)
-            {
                 throw std::runtime_error(
-                    "Incorrect format for user data (expected 3 parts).");
-            }
+                   "Некоректний формат рядка користувача (очікується 3 частини).");
 
             userName_ = parts[0];
             password_ = parts[1];
-            userRole_ = static_cast<UserRole>(std::stoi(parts[2]));
+
+            int roleInt = std::stoi(parts[2]);
+            switch (roleInt)
+            {
+            case 0: userRole_ = UserRole::Admin;        break;
+            case 1: userRole_ = UserRole::StandardUser; break;
+            case 2: userRole_ = UserRole::Guest;        break;
+            default: throw std::out_of_range("Невідома роль.");
+            }
         }
         catch (const std::exception& e)
         {
-            std::cout << "[ERROR] Failed to deserialize User data: " << e.what()
-                << std::endl;
-            userName_ = "error_guest";
-            password_ = "";
+            std::cout << "[ERROR] Не вдалося десеріалізувати користувача: "
+                      << e.what() << std::endl;
+
+            userName_ = "guest";
+            password_.clear();
             userRole_ = UserRole::Guest;
         }
     }
