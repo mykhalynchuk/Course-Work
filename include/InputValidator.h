@@ -13,13 +13,11 @@ namespace FootballManagement
     class InputValidator 
     {
     public:
-        // --- ВЛАСНІ МЕТОДИ (Мінімум 5) ---
-        
         /**
-         * @brief Отримує ціле число, повторюючи запит у разі некоректного типу.
-         * @param prompt Текст підказки для користувача.
-         * @return int Коректне ціле число.
-         */
+           * @brief Отримує ціле число з консолі. Якщо введено некоректно — повторює запит.
+           * @param prompt Підказка користувачу.
+           * @return Коректне ціле число.
+           */
         static int GetIntInput(const std::string& prompt);
 
         /**
@@ -27,26 +25,27 @@ namespace FootballManagement
          * @param prompt Текст підказки.
          * @param min Мінімальне дозволене значення.
          * @param max Максимальне дозволене значення.
-         * @return int Коректне ціле число в діапазоні.
+         * @return Коректне ціле число в діапазоні.
          */
         static int GetIntInRange(const std::string& prompt, int min, int max);
 
         /**
-         * @brief Отримує дробове число, повторюючи запит у разі некоректного типу.
-         * @param prompt Текст підказки.
-         * @return double Коректне дробове число.
-         */
+       * @brief Отримує дробове (дійсне) число.
+       * @param prompt Підказка користувачу.
+       * @return Коректне число типу double.
+       */
         static double GetDoubleInput(const std::string& prompt);
 
         /**
-         * @brief Отримує строкове введення, яке не може бути порожнім.
-         * @param prompt Текст підказки.
-         * @return std::string Непорожня строка.
+        /**
+         * @brief Отримує непорожній рядок.
+         * @param prompt Підказка користувачу.
+         * @return Строка, яка не є пустою.
          */
         static std::string GetNonEmptyString(const std::string& prompt);
 
         /**
-         * @brief Перевіряє чи є введення типу 'Yes'/'No' (Y/N).
+         * @brief Перевіряє чи є введення типу 'так'/'ні' (Y/N).
          * @param prompt Текст підказки.
          * @return bool true для 'Y' або 'y'.
          */
