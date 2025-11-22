@@ -18,24 +18,41 @@ namespace FootballManagement
         bool availableForNegotiation_;
 
     public:
+        /** @brief Конструктор за замовчуванням. */
         FreeAgent();
+
+        /**
+          * @brief Конструктор із параметрами.
+          * @param name Ім’я гравця.
+          * @param age Вік.
+          * @param nationality Громадянство.
+          * @param origin Походження.
+          * @param height Зріст.
+          * @param weight Вага.
+          * @param marketValue Ринкова ціна.
+          * @param position Позиція на полі.
+          * @param expectedSalary Очікувана зарплата.
+          * @param lastClub Останній клуб.
+          */
         FreeAgent(const std::string& name, int age,
                   const std::string& nationality,
                   const std::string& origin, double height, double weight,
                   double marketValue, Position position, double expectedSalary,
                   const std::string& lastClub);
 
-        FreeAgent(const std::string& name, int age,
-                  const std::string& nationality, const std::string& origin,
-                  double height, double weight,
-                  double marketValue, Position position, double expectedSalary,
-                  std::string& lastClub);
-
+        /** @brief Копіювальний конструктор. */
         FreeAgent(const FreeAgent& other);
+
+        /** @brief Переміщувальний конструктор. */
         FreeAgent(FreeAgent&& other) noexcept;
+
+        /** @brief Оператор копіювального присвоєння. */
         FreeAgent& operator=(const FreeAgent& other);
+
+        /** @brief Оператор переміщувального присвоєння. */
         FreeAgent& operator=(FreeAgent&& other) noexcept;
 
+        /** @brief Віртуальний деструктор. */
         ~FreeAgent() override;
 
         double GetExpectedSalary() const;
@@ -43,13 +60,13 @@ namespace FootballManagement
         bool IsAvailableForNegotiation() const;
         int GetMonthWithoutClub() const;
 
-        void SetLastClub(std::string value);
-        void SetMonthWithoutClub(int month);
+        void SetLastClub(const std::string& lastClub);
+        void SetMonthWithoutClub(int months);
 
         /**
-         * @brief Гравець оцінює пропозицію клубу та приймає хх, якщо вона відповідає очікуванням.
+         * @brief Гравець оцінює пропозицію клубу та приймає її, якщо вона відповідає очікуванням.
          * @param offer Пропозиція зарплати від клубу.
-         * @return bool Результат переговорів.
+         * @return True^ Результат переговорів.
          */
         bool NegotiateOffer(double offer);
 
@@ -73,7 +90,7 @@ namespace FootballManagement
 
         /**
          * @brief Підписання контракту.
-         * @param club назва клубу.
+         * @param club Назва клубу.
          */
         void AcceptContract(const std::string& club);
 
