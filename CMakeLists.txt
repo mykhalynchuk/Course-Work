@@ -1,30 +1,13 @@
-cmake_minimum_required(VERSION 4.0)
-project(CourseWork)
+cmake_minimum_required(VERSION 3.16)
+project(CourseWork LANGUAGES CXX)
 
+# Вмикаємо C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(team_system
-        main.cpp
-        src/Player.cpp
-        src/ContractedPlayer.cpp
-        include/ContractedPlayer.h
-        include/Player.h
-        include/AuthManager.h
-        include/ClubManager.h
-        include/ContractDetails.h
-        include/ContractedPlayer.h
-        include/FieldPlayer.h
-        include/FileManager.h
-        include/FreeAgent.h
-        include/Goalkeepeer.h
-        include/IFileHandler.h
-        include/InputValidator.h
-        include/Menu.h
-        include/Player.h
-        include/User.h
-        include/Utils.h
+# Джерела
+set(SOURCES
         src/AuthManager.cpp
         src/ClubManager.cpp
         src/ContractDetails.cpp
@@ -37,8 +20,16 @@ add_executable(team_system
         src/Menu.cpp
         src/Player.cpp
         src/User.cpp
+        main.cpp
 )
 
-target_include_directories(team_system PRIVATE include)
+add_executable(team_system ${SOURCES})
 
-target_compile_options(team_system PRIVATE -Wall -Wextra -Wpedantic)
+target_include_directories(team_system PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+# Корисні попередження
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
+    target_compile_options(team_system PRIVATE -Wall -Wextra -Wpedantic)
+elseif (MSVC)
+    target_compile_options(team_system PRIVATE /W4 /permissive-)
+endif()

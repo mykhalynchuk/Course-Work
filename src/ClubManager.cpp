@@ -199,7 +199,7 @@ namespace FootballManagement
             << std::endl;
     }
 
-    void ClubManager::DeserializeAllPlaters(
+    void ClubManager::DeserializeAllPlayers(
         const std::vector<std::string>& lines)
     {
         players_.clear();

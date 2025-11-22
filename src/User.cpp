@@ -140,14 +140,14 @@ namespace FootballManagement
     void User::Logout()
     {
         std::cout << "[INFO] Користувач \"" << userName_
-                  << "\" вийшов із системи." << std::endl;
+            << "\" вийшов із системи." << std::endl;
     }
 
     std::string User::Serialize() const
     {
         std::stringstream ss;
         ss << userName_ << ":" << password_ << ":"
-           << static_cast<int>(userRole_);
+            << static_cast<int>(userRole_);
         return ss.str();
     }
 
@@ -164,7 +164,7 @@ namespace FootballManagement
 
             if (parts.size() != 3)
                 throw std::runtime_error(
-                   "Некоректний формат рядка користувача (очікується 3 частини).");
+                    "Некоректний формат рядка користувача (очікується 3 частини).");
 
             userName_ = parts[0];
             password_ = parts[1];
@@ -172,16 +172,19 @@ namespace FootballManagement
             int roleInt = std::stoi(parts[2]);
             switch (roleInt)
             {
-            case 0: userRole_ = UserRole::Admin;        break;
-            case 1: userRole_ = UserRole::StandardUser; break;
-            case 2: userRole_ = UserRole::Guest;        break;
+            case 0: userRole_ = UserRole::Admin;
+                break;
+            case 1: userRole_ = UserRole::StandardUser;
+                break;
+            case 2: userRole_ = UserRole::Guest;
+                break;
             default: throw std::out_of_range("Невідома роль.");
             }
         }
         catch (const std::exception& e)
         {
             std::cout << "[ERROR] Не вдалося десеріалізувати користувача: "
-                      << e.what() << std::endl;
+                << e.what() << std::endl;
 
             userName_ = "guest";
             password_.clear();

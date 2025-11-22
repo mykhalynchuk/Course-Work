@@ -38,7 +38,7 @@ namespace FootballManagement
                     double budget = 10000000.0);
 
         /** @brief Віртуальний деструктор. */
-        ~ClubManager() noexcept override = default;
+        ~ClubManager() override = default;
 
         double GetTransferBudget() const;
         void SetTransferBudget(double budget);
@@ -100,6 +100,6 @@ namespace FootballManagement
          * @brief Спеціальний метод для завантаження даних із вектора рядків, отриманих з FileManager.
          * @param lines Вектор рядків, прочитаних із файлу.
          */
-        void DeserializeAllPlaters(const std::vector<std::string>& lines);
+        void DeserializeAllPlayers(const std::vector<std::string>& lines);
     };
 }

@@ -22,31 +22,30 @@ namespace FootballManagement
         FileManager fileManager_;
         bool isRunning_;
 
-        void displayMainManu() const;
-        void handleMainManu(int choice);
-
-        void displayAdminMenu() const;
-        void handleAdminMenu(int choice);
+        void displayMainMenu() const;
+        void handleMainMenu(int choice);
 
         void displayPlayerMenu() const;
+        void deletePlayerFlow();
+        void addPlayerFlow();
+
+        void viewPlayersFlow() const;
+        void searchPlayerFlow() const;
+        void transferFlow();
+
+        void manageUsersFlow();
+        void adminCreateUser();
 
         void authenticateUser();
         void saveAndExit();
         void displayHelp() const;
 
-        void addPlayerFlow();
-        void viewPlayersFlow() const;
-        void searchPlayerFlow() const;
-        void manageUsersFlow();
-        void adminCreateUser();
-        void transferFlow();
-
     public:
         /**
-         * @brief Конструктор. Ініціалізує менеджери.
-         * @param clubManager Менеджер клубу.
-         */
-        Menu(std::shared_ptr<ClubManager> clubManager);
+          * @brief Конструктор класу Menu.
+          * @param clubManager Вказівник на об'єкт менеджера клубу.
+          */
+        explicit Menu(std::shared_ptr<ClubManager> clubManager);
 
         virtual ~Menu() = default;
 

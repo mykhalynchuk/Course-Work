@@ -68,16 +68,16 @@ namespace FootballManagement
         /** @brief Віртуальний деструктор. */
         virtual ~Player();
 
-        int GetPlayerId() const;
-        std::string GetName() const;
-        int GetAge() const;
-        std::string GetNationality() const;
-        std::string GetOrigin() const;
-        double GetHeight() const;
-        double GetWeight() const;
-        double GetMarketValue() const;
-        bool IsInjured() const;
-        const std::vector<Injury>& GetInjuryHistory() const;
+        [[nodiscard]] int GetPlayerId() const;
+        [[nodiscard]] std::string GetName() const;
+        [[nodiscard]] int GetAge() const;
+        [[nodiscard]] std::string GetNationality() const;
+        [[nodiscard]] std::string GetOrigin() const;
+       [[nodiscard]] double GetHeight() const;
+        [[nodiscard]] double GetWeight() const;
+        [[nodiscard]] double GetMarketValue() const;
+       [[nodiscard]] bool IsInjured() const;
+        [[nodiscard]] const std::vector<Injury>& GetInjuryHistory() const;
 
         void SetPlayerId(int playerId);
         void SetName(const std::string& name);
@@ -91,10 +91,10 @@ namespace FootballManagement
         virtual void ShowInfo() const = 0;
 
         /** @brief Абстрактний метод — розрахунок ринкової вартості. */
-        virtual double CalculateValue() const = 0;
+        [[nodiscard]] virtual double CalculateValue() const = 0;
 
         /** @brief Абстрактний метод — ефективність гравця. */
-        virtual double CalculatePerformanceRating() const = 0;
+       [[nodiscard]] virtual double CalculatePerformanceRating() const = 0;
 
         /** @brief Абстрактний метод — статус (контракт / вільний агент). */
         virtual std::string GetStatus() const = 0;
@@ -122,12 +122,12 @@ namespace FootballManagement
         void UpdateMarketValue(double percentageChange);
 
 
-        std::string Serialize() const override = 0;
+        [[nodiscard]] std::string Serialize() const override = 0;
         virtual void Deserialize(const std::string& data) override = 0;
 
     protected:
         /** @brief Серіалізація спільних полів для JSON. */
-        std::string SerializeBase() const;
+       [[nodiscard]] std::string SerializeBase() const;
 
         /** @brief Десеріалізація спільних полів. */
         void DeserializeBase(const std::string& json);

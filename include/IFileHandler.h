@@ -12,9 +12,9 @@ namespace FootballManagement
     public:
         /**
          * @brief Серіалізує об'єкт у рядкового представлення.
-         * @return std::string Рядок у форматі, придатному для збереження у файл.
+         * @return Рядок у форматі, придатному для збереження у файл.
          */
-        virtual std::string Serialize() const = 0;
+        [[nodiscard]] virtual std::string Serialize() const = 0;
 
         /**
          * @brief Десеріалізує об'єкт із рядкового представлення.
