@@ -81,7 +81,7 @@ namespace FootballManagement
         return *this;
     }
 
-    FreeAgent::~FreeAgent()
+    FreeAgent::~FreeAgent() noexcept
     {
         std::cout << "[DEBUG] Вільний агент \"" << GetName() << "\" видалений."
             << std::endl;

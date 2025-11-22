@@ -54,7 +54,7 @@ namespace FootballManagement
         FreeAgent& operator=(FreeAgent&& other) noexcept;
 
         /** @brief Віртуальний деструктор. */
-        ~FreeAgent() override;
+        ~FreeAgent() noexcept override;
 
         double GetExpectedSalary() const;
         std::string GetLastClub() const;

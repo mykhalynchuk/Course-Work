@@ -2,9 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <memory>
-#include <stdexcept>
-#include <sstream>
 #include "Utils.h"
 #include "IFileHandler.h"
 
@@ -66,7 +63,7 @@ namespace FootballManagement
         Player& operator=(Player&& other) noexcept;
 
         /** @brief Віртуальний деструктор. */
-        virtual ~Player();
+        ~Player() noexcept override;
 
         [[nodiscard]] int GetPlayerId() const;
         [[nodiscard]] std::string GetName() const;
@@ -97,7 +94,7 @@ namespace FootballManagement
        [[nodiscard]] virtual double CalculatePerformanceRating() const = 0;
 
         /** @brief Абстрактний метод — статус (контракт / вільний агент). */
-        virtual std::string GetStatus() const = 0;
+        [[nodiscard]] virtual std::string GetStatus() const = 0;
 
         /** @brief Абстрактний метод — день народження (збільшити вік). */
         virtual void CelebrateBirthday() = 0;
@@ -123,11 +120,11 @@ namespace FootballManagement
 
 
         [[nodiscard]] std::string Serialize() const override = 0;
-        virtual void Deserialize(const std::string& data) override = 0;
+        void Deserialize(const std::string& data) override = 0;
 
     protected:
         /** @brief Серіалізація спільних полів для JSON. */
-       [[nodiscard]] std::string SerializeBase() const;
+        [[nodiscard]] std::string SerializeBase() const;
 
         /** @brief Десеріалізація спільних полів. */
         void DeserializeBase(const std::string& json);

@@ -25,6 +25,7 @@ namespace FootballManagement
 
         AuthManager(const AuthManager&) = delete;
         AuthManager& operator=(const AuthManager&) = delete;
+        ~AuthManager() noexcept override = default;
 
     public:
         /**

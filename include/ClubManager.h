@@ -26,7 +26,7 @@ namespace FootballManagement
        * @brief Генерує унікальний ID для нового гравця.
        * @return Новий унікальний ID.
        */
-        int generateUniqueId() const;
+        int GenerateUniqueId() const;
 
     public:
         /**
@@ -38,7 +38,7 @@ namespace FootballManagement
                     double budget = 10000000.0);
 
         /** @brief Віртуальний деструктор. */
-        ~ClubManager() override = default;
+        ~ClubManager() noexcept override = default;
 
         double GetTransferBudget() const;
         void SetTransferBudget(double budget);
@@ -71,15 +71,15 @@ namespace FootballManagement
          * @param nameQuery Частина імені для пошуку.
          * @return std::vector<std::shared_ptr<Player>> Знайдені гравці.
          */
-        std::vector<std::shared_ptr<Player> > SearchByName(
-            const std::string& nameQuery) const;
+        std::vector<std::shared_ptr<Player>> SearchByName(
+            const std::string& q) const;
 
         /**
          * @brief Фільтрує гравців за статусом.
          * @param status Статус для фільтрації.
          * @return std::vector<std::shared_ptr<Player>> Відфільтровані гравці.
          */
-        std::vector<std::shared_ptr<Player> > FilterByStatus(
+        std::vector<std::shared_ptr<Player>> FilterByStatus(
             const std::string& status) const;
 
         /**

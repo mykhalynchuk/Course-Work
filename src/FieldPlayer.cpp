@@ -1,6 +1,5 @@
 #include "../include/FieldPlayer.h"
 #include <iostream>
-#include <sstream>
 #include <iomanip>
 #include <stdexcept>
 #include <utility>
@@ -160,6 +159,8 @@ namespace FootballManagement
         std::cout << "Конверсія ударів: " << std::fixed << std::setprecision(2)
                   << CalculateConversionRate() << "%" << std::endl;
     }
+
+    void SetAge(int newAge);
 
     void FieldPlayer::CelebrateBirthday()
     {

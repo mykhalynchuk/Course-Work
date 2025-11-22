@@ -22,6 +22,11 @@ namespace FootballManagement
     public:
         /** @brief Конструктор за замовчуванням. */
         ContractedPlayer();
+        ContractedPlayer(const std::string& name, int age,
+                         const std::string& nationality, std::string& origin,
+                         double height, double weight, double marketValue,
+                         Position position, double salary,
+                         const std::string& contractUntil);
 
         /**
          * @brief Конструктор із параметрами для ініціалізації контрактного гравця.
@@ -56,11 +61,11 @@ namespace FootballManagement
         ContractedPlayer& operator=(ContractedPlayer&& other) noexcept;
 
         /** @brief Віртуальний деструктор. */
-        ~ContractedPlayer() override;
+        ~ContractedPlayer() noexcept override;
 
-        bool IsListedForTransfer() const;
-        double GetTransferFee() const;
-        ContractDetails GetContractDetails() const;
+        [[nodiscard]] bool IsListedForTransfer() const;
+        [[nodiscard]] double GetTransferFee() const;
+        [[nodiscard]] ContractDetails GetContractDetails() const;
 
         /**
          * @brief Виставляє гравця на трансфер з вказаною ціною та умовами.
@@ -103,12 +108,12 @@ namespace FootballManagement
                         const std::string& endDate);
 
 
-        double CalculateValue() const override;
-        std::string GetStatus() const override;
+        [[nodiscard]] double CalculateValue() const override;
+        [[nodiscard]] std::string GetStatus() const override;
         void ShowInfo() const override;
         void CelebrateBirthday() override = 0;
-        double CalculatePerformanceRating() const override = 0;
-        std::string Serialize() const override = 0;
-        virtual void Deserialize(const std::string& data) override = 0;
+        [[nodiscard]] double CalculatePerformanceRating() const override = 0;
+        [[nodiscard]] std::string Serialize() const override = 0;
+        void Deserialize(const std::string& data) override = 0;
     };
 }

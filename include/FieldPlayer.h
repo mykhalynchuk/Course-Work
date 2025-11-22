@@ -53,15 +53,15 @@ namespace FootballManagement
         FieldPlayer& operator=(FieldPlayer&& other) noexcept;
 
         /** @brief Віртуальний деструктор. */
-        virtual ~FieldPlayer();
+        ~FieldPlayer() override;
 
-        int GetTotalGames() const;
-        int GetKeyPasses() const;
-        int GetTotalGoals() const;
-        int GetTotalAssists() const;
-        int GetTotalShots() const;
-        int GetTotalTackles() const;
-        Position GetPosition() const;
+        [[nodiscard]] int GetTotalGames() const;
+        [[nodiscard]] int GetKeyPasses() const;
+        [[nodiscard]] int GetTotalGoals() const;
+        [[nodiscard]] int GetTotalAssists() const;
+        [[nodiscard]] int GetTotalShots() const;
+        [[nodiscard]] int GetTotalTackles() const;
+        [[nodiscard]] Position GetPosition() const;
 
         void SetPosition(Position position);
 
@@ -88,7 +88,7 @@ namespace FootballManagement
          * @brief Розраховує відсоток реалізації ударів.
          * @return double Коефіцієнт конверсії.
          */
-        double CalculateConversionRate() const;
+        [[nodiscard]] double CalculateConversionRate() const;
 
         /**
          * @brief Реєструє зіграний матч.
@@ -103,11 +103,11 @@ namespace FootballManagement
         void ShowInfo() const override;
         void CelebrateBirthday() override;
 
-        virtual double CalculateValue() const override = 0;
-        virtual double CalculatePerformanceRating() const override = 0;
-        virtual std::string GetStatus() const override = 0;
+        [[nodiscard]] double CalculateValue() const override = 0;
+        [[nodiscard]] double CalculatePerformanceRating() const override = 0;
+        [[nodiscard]] std::string GetStatus() const override = 0;
 
-        virtual std::string Serialize() const override = 0;
-        virtual void Deserialize(const std::string& data) override = 0;
+        [[nodiscard]] std::string Serialize() const override = 0;
+        void Deserialize(const std::string& data) override = 0;
     };
 }

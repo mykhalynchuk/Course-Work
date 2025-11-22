@@ -49,11 +49,11 @@ namespace FootballManagement
         Goalkeeper& operator=(Goalkeeper&& other) noexcept;
 
         /** @brief Віртуальний деструктор. */
-        virtual ~Goalkeeper();
+        virtual ~Goalkeeper() noexcept override;
 
         int GetMatchesPlayed() const;
         int GetCleanSheets() const;
-        int GetSavesTotal() const;
+        static void GetSavesTotal();
         int GetGoalsConceded() const;
         int GetPenaltiesSaved() const;
 

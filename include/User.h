@@ -42,7 +42,7 @@ namespace FootballManagement
         User& operator=(User&& other) noexcept;
 
         /** @brief Віртуальний деструктор (з відлагоджувальним повідомленням). */
-        virtual ~User();
+        ~User() noexcept override;
 
         /** @brief Повертає логін користувача. */
         std::string GetUserName() const;

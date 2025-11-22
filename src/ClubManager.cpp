@@ -29,7 +29,7 @@ namespace FootballManagement
 
     std::string ClubManager::GetClubName() const { return clubName_; }
 
-    std::string ClubManager::GenerateUniqueId() const
+    int ClubManager::GenerateUniqueId() const
     {
         int maxId = 1000;
         for (const auto& p : players_)
@@ -45,7 +45,7 @@ namespace FootballManagement
         if (!p)
             throw std::invalid_argument("Неможливо додати порожнього гравця.");
 
-        if (p->GetPlayerId() == 0)
+        if (p && p->GetPlayerId() == 0)
             p->SetPlayerId(GenerateUniqueId());
 
         players_.push_back(p);
@@ -73,7 +73,7 @@ namespace FootballManagement
 
     void ClubManager::RemovePlayers(int playerId)
     {
-        auto oldSize = players_.size();
+        const auto before = players_.size();
         players_.erase(std::remove_if(players_.begin(), players_.end(),
                                       [playerId](const auto& p)
                                       {
@@ -81,7 +81,7 @@ namespace FootballManagement
                                       }),
                        players_.end());
 
-        if (players_.size() < oldSize)
+        if (players_.size() < before)
             std::cout << "[SUCCESS] Гравця з ID " << playerId << " видалено." <<
                 std::endl;
         else
@@ -102,7 +102,7 @@ namespace FootballManagement
     }
 
     std::vector<std::shared_ptr<Player>> ClubManager::SearchByName(
-        const std::string& nameQuery) const
+        const std::string& q) const
     {
         std::vector<std::shared_ptr<Player>> results;
         std::string lowerQuery = nameQuery;

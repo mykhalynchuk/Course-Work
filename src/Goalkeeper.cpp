@@ -77,7 +77,7 @@ namespace FootballManagement
         return *this;
     }
 
-    Goalkeeper::~Goalkeeper()
+    Goalkeeper::~Goalkeeper() noexcept
     {
         std::cout << "[DEBUG] Воротар \"" << GetName() << "\" знищений."
             << std::endl;
@@ -85,6 +85,11 @@ namespace FootballManagement
 
     int Goalkeeper::GetMatchesPlayed() const { return matchesPlayed_; }
     int Goalkeeper::GetCleanSheets() const { return savesTotal_; }
+
+    void Goalkeeper::GetSavesTotal()
+    {
+    }
+
     int Goalkeeper::GetGoalsConceded() const { return goalsConceded_; }
     int Goalkeeper::GetPenaltiesSaved() const { return penaltiesSaved_; }
 
@@ -174,6 +179,8 @@ namespace FootballManagement
     {
       return IsInjured() ? "Травмований воротар" : "Активний воротар";
     }
+
+    void SetAge(int newAge);
 
     void Goalkeeper::CelebrateBirthday()
     {

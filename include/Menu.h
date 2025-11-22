@@ -26,15 +26,15 @@ namespace FootballManagement
         void handleMainMenu(int choice);
 
         void displayPlayerMenu() const;
-        void deletePlayerFlow();
+        void deletePlayerFlow() const;
         void addPlayerFlow();
 
         void viewPlayersFlow() const;
         void searchPlayerFlow() const;
-        void transferFlow();
+        void transferFlow() const;
 
         void manageUsersFlow();
-        void adminCreateUser();
+        static void adminCreateUser();
 
         void authenticateUser();
         void saveAndExit();
@@ -62,7 +62,7 @@ namespace FootballManagement
         /**
          * @brief Завантажує всі дані (користувачів та гравців).
          */
-        void LoadAllData();
+        void LoadAllData() const;
 
         /**
          * @brief Зберігає всі дані (користувачів та гравців).

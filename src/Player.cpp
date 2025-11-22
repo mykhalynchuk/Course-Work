@@ -1,5 +1,6 @@
 #include "../include/Player.h"
 #include<iostream>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -58,6 +59,7 @@ namespace FootballManagement
                                               height_(other.height_),
                                               weight_(other.weight_),
                                               marketValue_(other.marketValue_),
+                                              injured_(false),
                                               injuryHistory_(std::move(
                                                   other.injuryHistory_))
     {
@@ -100,7 +102,7 @@ namespace FootballManagement
         return *this;
     }
 
-    Player::~Player()
+    Player::~Player() noexcept
     {
         std::cout << "[DEBUG] Гравець \"" << name_
             << "\" (ID: " << playerId_ << ") видалений.\n";

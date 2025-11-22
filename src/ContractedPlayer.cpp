@@ -83,7 +83,7 @@ namespace FootballManagement
         return *this;
     }
 
-    ContractedPlayer::~ContractedPlayer()
+    ContractedPlayer::~ContractedPlayer() noexcept
     {
         std::cout << "[DEBUG] Контрактний гравець \"" << GetName()
             << "\" видалений." << std::endl;

@@ -62,7 +62,7 @@ namespace FootballManagement
         return *this;
     }
 
-    User::~User()
+    User::~User() noexcept
     {
         std::cout << "[DEBUG] Користувача \"" << userName_
             << "\" знищено." << std::endl;

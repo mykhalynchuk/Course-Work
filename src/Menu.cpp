@@ -18,11 +18,11 @@ namespace FootballManagement
     {
     }
 
-    void Menu::LoadAllData()
+    void Menu::LoadAllData() const
     {
         try
         {
-            std::vector<std::string> userLines = fileManager_.LoadFromFile(
+            const std::vector<std::string> userLines = fileManager_.LoadFromFile(
                 USERS_FILE_NAME);
             AuthManager::GetInstance().DeserializeAllUsers(userLines);
             std::cout << "[ІНФО] Дані користувачів завантажено." << std::endl;
@@ -51,7 +51,6 @@ namespace FootballManagement
     {
         std::cout << "[ІНФО] Збереження даних..." << std::endl;
         fileManager_.SaveToFile(USERS_FILE_NAME, AuthManager::GetInstance());
-        fileManager_.SaveToFile(PLAYERS_DATA_FILE, *clubManager_);
         std::cout << "[УСПІХ] Усі дані збережено." << std::endl;
     }
 
@@ -59,14 +58,6 @@ namespace FootballManagement
     {
         LoadAllData();
         authenticateUser();
-
-        while (isRunning_ && AuthManager::GetInstance().IsLoggedIn())
-        {
-            displayMainMenu();
-            int choice = InputValidator::GetIntInRange(
-                "Введіть номер дії: ", 1, 9);
-            handleMainMenu(choice);
-        }
 
         if (!AuthManager::GetInstance().IsLoggedIn())
         {
@@ -184,7 +175,7 @@ namespace FootballManagement
         if (choice == 2) const_cast<Menu*>(this)->deletePlayerFlow();
     }
 
-    void Menu::deletePlayerFlow()
+    void Menu::deletePlayerFlow() const
     {
         int id = InputValidator::GetIntInput(
             "Введіть ID гравця для видалення: ");
@@ -278,7 +269,7 @@ namespace FootballManagement
         }
     }
 
-    void Menu::transferFlow()
+    void Menu::transferFlow() const
     {
         std::cout << "\n--- ТРАНСФЕРНИЙ РИНОК ---\n";
         std::string nameQuery = InputValidator::GetNonEmptyString(
